@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApiLearning.DTO;
+using WebApiLearning.GenericResponse;
 using WebApiLearning.IService;
 
 namespace WebApiLearning.Controllers
@@ -24,16 +25,38 @@ namespace WebApiLearning.Controllers
                 var result = await _authservice.LoginUser(dto);
                 if(result.Item1 == 0)
                 {
-                    return NotFound(result.Item2);
+                    //return NotFound(result.Item2);
+                    //instead traditional return, we'll return the data using generic common response model
+                    return NotFound(ResponseResult<string>.Failed(null,result.Item2));
                 }
                 if(result.Item1==1)
                 {
-                    return BadRequest(result.Item2);
+                    // return BadRequest(result.Item2);
+                    return Ok(ResponseResult<string>.Success(null, result.Item2));
                 }
 
-                return Ok(result.Item2);
+                //return Ok(result.Item2);
+                return Ok(ResponseResult<string>.Success(null, result.Item2));
             }
             catch(Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody]UserDTO dto)
+        {
+            try
+            {
+                var result = await _authservice.RegisterUser(dto);
+                if(result.Item1 == 0)
+                {
+                    return Ok(ResponseResult<string>.Failed(null, result.Item2));
+                }
+                return Ok(ResponseResult<string>.Success(null, result.Item2));
+            }
+            catch(Exception ex)
             {
                 throw;
             }

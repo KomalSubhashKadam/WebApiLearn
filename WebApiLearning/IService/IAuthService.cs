@@ -5,5 +5,6 @@ namespace WebApiLearning.IService
     public interface IAuthService
     {
         Task<Tuple<int, string>> LoginUser(UserDTO userdto);
+        Task<Tuple<int, string>> RegisterUser(UserDTO userdto);
     }
 }
