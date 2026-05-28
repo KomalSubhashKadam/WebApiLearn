@@ -33,6 +33,34 @@ namespace WebApiLearning.Services
             }
         }
 
+        public async Task<Tuple<int,EmployeeDTO>> GetEmpByID(int id)
+        {
+            try
+            {
+                var data = await _dbcontext.EmployeeUser.Select(x => new EmployeeDTO
+                {
+                    Id = x.Id,
+                    CreatedAt = x.CreatedAt,
+                    Department = x.Department,
+                    DOB = x.DOB,
+                    EmailAddress = x.EmailAddress,
+                    Name = x.Name,
+                    LastModified = x.LastModified,
+                    Position = x.Position
+                }).FirstOrDefaultAsync(x => x.Id == id);
+
+                if(data == null)
+                {
+                    return new Tuple<int, EmployeeDTO>(0, null);
+                }
+                return new Tuple<int, EmployeeDTO> (1, data);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
         public async Task<Tuple<int,string>> CreateEmployee(EmployeeDTO empdto)
         {
             try
@@ -59,6 +87,59 @@ namespace WebApiLearning.Services
             catch(Exception ex)
             {
                 throw;
+            }
+        }
+
+        public async Task<Tuple<int,string>> UpdateEmployee(EmployeeDTO empdto)
+        {
+            try
+            {
+                if(empdto == null)
+                {
+                    return new Tuple<int, string>(0, "Please fill all the details");
+                }    
+                var existing = await _dbcontext.EmployeeUser.FirstOrDefaultAsync(x => x.EmailAddress == empdto.EmailAddress);
+                if (existing == null)
+                {
+                    return new Tuple<int, string>(0, "Employee does not exists.");
+                }
+
+                existing.Position = empdto.Position ?? existing.Position;
+                existing.Name = empdto.Name ?? existing.Name;
+                existing.DOB = empdto.DOB ?? existing.DOB;
+                existing.Department = empdto.Department ?? existing.Department;
+                existing.EmailAddress = empdto.EmailAddress ?? existing.EmailAddress;
+
+                _dbcontext.EmployeeUser.Update(existing);
+                await _dbcontext.SaveChangesAsync();
+
+                return new Tuple<int, string>(2, "Employee Updated Successfully.");
+
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Tuple<int,string>> DeleteEmployee(EmployeeDTO empdto)
+        {
+            try
+            {
+                var existing = await _dbcontext.EmployeeUser.FirstOrDefaultAsync(x => x.Id == empdto.Id);
+                if(existing == null)
+                {
+                    return new Tuple<int, string>(0, "Employee Does not exist");
+                }
+
+                _dbcontext.EmployeeUser.Remove(existing);
+                await _dbcontext.SaveChangesAsync();
+
+                return new Tuple<int, string>(1, "Employee deleted.");
+            }
+            catch(Exception ex)
+            {
+                throw;  
             }
         }
 

@@ -29,6 +29,26 @@ namespace WebApiLearning.Controllers
             }
         }
 
+        [HttpGet("GetEmployeeByID/{id}")]
+        public async Task<IActionResult> GetEmpById([FromRoute]int id)
+        {
+            try
+            {
+                var result = await _employeeservice.GetEmpByID(id);
+                if(result.Item1 == 0)
+                {
+                    return Ok(ResponseResult<EmployeeDTO>.Failed(null, "Employeenot found"));
+                }
+                return Ok(ResponseResult<EmployeeDTO>.Success(result.Item2, "Employee found"));
+
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+
         [HttpPost("CreateEmployee")]
         public async Task<IActionResult> CreateEmployee([FromBody]EmployeeDTO empdto)
         {
@@ -41,6 +61,43 @@ namespace WebApiLearning.Controllers
                     return Ok(ResponseResult<string>.Failed(null, result.Item2));
                 }
                 return Ok(ResponseResult<string>.Success(null,result.Item2));
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpPut("UpdateEmployee")]
+        public async Task<IActionResult> UpdateEmployee([FromBody] EmployeeDTO empdto)
+        {
+            try
+            {
+                
+                var result = await _employeeservice.UpdateEmployee(empdto);
+                if(result.Item1 == 0 || result.Item1 == null)
+                {
+                    return Ok(ResponseResult<string>.Failed(null, result.Item2));
+                }
+                return Ok(ResponseResult<string>.Success(null, result.Item2));
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpDelete("DeleteEmployee")]
+        public async Task<IActionResult> DeleteEmployee([FromBody] EmployeeDTO empdto)
+        {
+            try
+            {
+                var result = await _employeeservice.DeleteEmployee(empdto);
+                if(result.Item1 == 0)
+                {
+                    return Ok(ResponseResult<string>.Failed(null, result.Item2));
+                }
+                return Ok(ResponseResult<string>.Success(null, result.Item2));
             }
             catch(Exception ex)
             {
