@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApiLearning.DTO;
 using WebApiLearning.GenericResponse;
@@ -6,6 +7,7 @@ using WebApiLearning.IService;
 
 namespace WebApiLearning.Controllers
 {
+    
     [Route("api/[controller]")] //api/auth
     [ApiController]
     public class AuthController : ControllerBase
@@ -16,8 +18,8 @@ namespace WebApiLearning.Controllers
         {
             _authservice = authService;
         }
-
-        [HttpPost("Login")]
+		
+		[HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody]UserDTO dto)
         {
             try
@@ -27,16 +29,16 @@ namespace WebApiLearning.Controllers
                 {
                     //return NotFound(result.Item2);
                     //instead traditional return, we'll return the data using generic common response model
-                    return NotFound(ResponseResult<string>.Failed(null,result.Item2));
+                    return NotFound(ResponseResult<TokenDTO>.Failed(result.Item2, result.Item2.Message));
                 }
                 if(result.Item1==1)
                 {
                     // return BadRequest(result.Item2);
-                    return Ok(ResponseResult<string>.Success(null, result.Item2));
+                    return Ok(ResponseResult<TokenDTO>.Success(result.Item2, result.Item2.Message));
                 }
 
                 //return Ok(result.Item2);
-                return Ok(ResponseResult<string>.Success(null, result.Item2));
+                return Ok(ResponseResult<TokenDTO>.Success(result.Item2, result.Item2.Message));
             }
             catch(Exception)
             {

@@ -1,17 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApiLearning.DTO;
-using WebApiLearning.IService;
 using WebApiLearning.GenericResponse;
+using WebApiLearning.IService;
 using WebApiLearning.Services;
 
 namespace WebApiLearning.Controllers
 {
-    [Route("api/[controller]")]
+
+    [Authorize]
+	[Route("api/[controller]")]
     [ApiController]
     public class EmployeeController(IEmployeeService _employeeservice) : ControllerBase
     {
-        [HttpGet("GetAllEmployees")]
+		[HttpGet("GetAllEmployees")]
         public async Task<IActionResult> GetAllEmployees()
         {
             try
@@ -48,8 +51,8 @@ namespace WebApiLearning.Controllers
             }
         }
 
-
-        [HttpPost("CreateEmployee")]
+		
+		[HttpPost("CreateEmployee")]
         public async Task<IActionResult> CreateEmployee([FromBody]EmployeeDTO empdto)
         {
             try
